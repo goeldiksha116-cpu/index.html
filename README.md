@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Our Love Movie 🎬</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Great+Vibes&display=swap" rel="stylesheet">
 
 <style>
 body{
@@ -17,9 +17,7 @@ body{
 }
 
 .scene{display:none;min-height:100vh;padding:30px 16px;max-width:900px;margin:auto}
-.active{display:block;animation:fade 0.8s}
-
-@keyframes fade{from{opacity:0;transform:translateY(20px)}}
+.active{display:block}
 
 button{
  padding:14px 22px;
@@ -56,20 +54,11 @@ input{
  text-align:left;
 }
 
-/* chat */
 .chatbox{max-width:520px;margin:auto;text-align:left}
 .bubble{padding:12px 16px;border-radius:18px;margin:8px 0;max-width:80%}
 .me{background:#ff4da6;margin-left:auto}
 .her{background:#2b2b3c}
 .typing{opacity:.7;font-style:italic}
-
-/* ending */
-.cine{
- font-size:38px;
- background:linear-gradient(45deg,#ff7ac6,#ffd6f0);
- -webkit-background-clip:text;
- -webkit-text-fill-color:transparent;
-}
 
 .fade-line{opacity:0;transform:translateY(20px);transition:1s}
 .fade-line.show{opacity:1;transform:none}
@@ -85,7 +74,7 @@ img{width:100%;border-radius:12px;margin-top:12px}
 <!-- LOCK -->
 <div id="lock" class="scene active">
 <h1>Private Love Movie 🎬</h1>
-<input id="pw" type="password" placeholder="Password"><br>
+<input id="pwInput" type="password" placeholder="Password"><br>
 <button onclick="unlock()">Enter</button>
 </div>
 
@@ -94,19 +83,18 @@ img{width:100%;border-radius:12px;margin-top:12px}
 <h1>Hi My Favorite Person 💗</h1>
 <div class="card">Every click reveals a piece of my heart.</div>
 
-<button onclick="playList('intro')">Music 🎵</button>
 <button onclick="go('letter')">Letter 💌</button>
 <button onclick="go('story')">Story 📖</button>
 <button onclick="go('chat')">Chats 💬</button>
-<button onclick="go('quiz1')">Quiz 💞</button>
+<button onclick="go('quiz')">Quiz 💞</button>
 <button onclick="go('gallery')">Memories 📸</button>
 </div>
 
 <!-- LETTER -->
 <div id="letter" class="scene">
 <h2>My Letter</h2>
-<button onclick="playList('letter')">Letter Music</button>
 <div class="letter" id="letterBox"></div>
+<button onclick="typeLetter()">Reveal Letter</button>
 <button onclick="burst()">Feel This</button>
 <button onclick="go('home')">Back</button>
 </div>
@@ -114,59 +102,42 @@ img{width:100%;border-radius:12px;margin-top:12px}
 <!-- STORY -->
 <div id="story" class="scene">
 <h2>Our Story 🌙</h2>
-<div class="card">Chapter 1 — WRITE HERE</div>
-<div class="card">Chapter 2 — WRITE HERE</div>
-<div class="card">Chapter 3 — WRITE HERE</div>
-<button onclick="go('clue')">Continue →</button>
+<div class="card">Chapter 1 — write here</div>
+<div class="card">Chapter 2 — write here</div>
+<div class="card">Chapter 3 — write here</div>
+<button onclick="go('quiz')">Continue</button>
 </div>
 
 <!-- CHAT -->
 <div id="chat" class="scene">
 <h2>Unsent Chats 💬</h2>
-<div class="chatbox" id="chatbox"></div>
+<div id="chatbox" class="chatbox"></div>
 <button onclick="startChat()">Play Chat</button>
-<button onclick="go('quiz1')">Continue →</button>
+<button onclick="go('home')">Back</button>
 </div>
 
 <!-- QUIZ -->
-<div id="quiz1" class="scene">
-<h2>Love Quiz</h2>
-<p>Who owns my smile?</p>
-<button onclick="go('quiz2')">You</button>
-<button onclick="go('quiz2')">Still You</button>
-</div>
-
-<div id="quiz2" class="scene">
-<p>Type what I feel:</p>
-<input id="loveAns">
-<button onclick="checkLove()">Submit</button>
-</div>
-
-<!-- CLUE -->
-<div id="clue" class="scene">
-<p>Type the deepest word:</p>
-<input id="deep">
-<button onclick="unlockFinal()">Unlock</button>
+<div id="quiz" class="scene">
+<h2>Deepest Word?</h2>
+<input id="deepInput">
+<button onclick="checkDeep()">Unlock Ending</button>
 </div>
 
 <!-- GALLERY -->
 <div id="gallery" class="scene">
 <h2>Memories 📸</h2>
-<button onclick="playList('memory')">Memory Music</button>
 <img src="her.jpg">
 <img src="us.jpg">
 <img src="ss1.jpg">
-<img src="ss2.jpg">
 <button onclick="go('home')">Back</button>
 </div>
 
 <!-- FINAL -->
 <div id="final" class="scene">
-<div class="cine">Final Scene 🎬</div>
-<div class="card" id="endLines">
+<h2>Final Scene 🎬</h2>
+<div id="endLines">
 <div class="fade-line">Out of everyone…</div>
-<div class="fade-line">I still choose you.</div>
-<div class="fade-line">Every timeline.</div>
+<div class="fade-line">I choose you.</div>
 <div class="fade-line">Every day.</div>
 </div>
 <button onclick="playEnding()">Play Ending</button>
@@ -174,7 +145,6 @@ img{width:100%;border-radius:12px;margin-top:12px}
 </div>
 
 <script>
-/* PASSWORD */
 const PASS="lovemovie";
 
 /* NAV */
@@ -183,30 +153,21 @@ function go(id){
  document.getElementById(id).classList.add("active");
 }
 
+/* ✅ FIXED UNLOCK */
 function unlock(){
- if(pw.value===PASS) go("home");
- else alert("Wrong password 😳");
-}
-
-/* MUSIC */
-const tracks={
- intro:["intro1.mp3"],
- letter:["letter1.mp3"],
- memory:["memory1.mp3"]
-};
-
-let list=[],i=0;
-function playList(name){
- list=tracks[name]||[];
- if(!list.length) return;
- i=0; music.src=list[0]; music.play();
+ const v=document.getElementById("pwInput").value.trim();
+ if(v===PASS){
+   go("home");
+ } else {
+   alert("Wrong password 😳");
+ }
 }
 
 /* EMOJI BURST */
 const emojis=["😳","❤️","✨","💞","🥺"];
 function burst(){
- for(let i=0;i<28;i++){
-  const e=document.createElement("div");
+ for(let i=0;i<25;i++){
+  let e=document.createElement("div");
   e.innerHTML=emojis[Math.floor(Math.random()*emojis.length)];
   e.style.position="fixed";
   e.style.left=Math.random()*100+"vw";
@@ -214,78 +175,54 @@ function burst(){
   e.style.fontSize="28px";
   e.style.transition="2s linear";
   document.body.appendChild(e);
-  setTimeout(()=>{
-   e.style.transform="translateY(110vh) rotate(360deg)";
-   e.style.opacity=0;
-  },50);
+  setTimeout(()=>{e.style.transform="translateY(110vh)";e.style.opacity=0;},50);
   setTimeout(()=>e.remove(),2000);
  }
 }
 
-/* LETTER TYPEWRITER */
-const msg=`WRITE YOUR DEEP LOVE LETTER HERE`;
-let done=false;
-letter.onclick=()=>{
- if(done) return; done=true;
- let t=0;
+/* LETTER */
+const letterText=`WRITE YOUR LOVE LETTER HERE`;
+function typeLetter(){
+ let box=document.getElementById("letterBox");
+ box.innerHTML="";
+ let i=0;
  function step(){
-  if(t<msg.length){
-   letterBox.innerHTML+=msg[t++];
-   setTimeout(step,30);
+  if(i<letterText.length){
+    box.innerHTML+=letterText[i++];
+    setTimeout(step,30);
   }
  }
  step();
-};
+}
 
 /* CHAT */
-const chat=[
- {t:"me",x:"okay act normal…"},
- {t:"me",x:"don’t fall too fast…"},
- {t:"typing"},
- {t:"her",x:"why are you smiling?"},
- {t:"me",x:"because it’s you."}
-];
-
 function startChat(){
- chatbox.innerHTML="";
- let k=0;
- function step(){
-  if(k>=chat.length) return;
-  let m=chat[k++];
-  if(m.t==="typing"){
-    let d=document.createElement("div");
-    d.className="bubble her typing";
-    d.innerText="typing…";
-    chatbox.appendChild(d);
-    setTimeout(()=>{d.remove();step();},1200);
-    return;
-  }
-  let b=document.createElement("div");
-  b.className="bubble "+m.t;
-  b.innerText=m.x;
-  chatbox.appendChild(b);
-  setTimeout(step,900);
- }
- step();
+ const flow=["okay act normal…","don’t fall too fast…","why is she this adorable","yeah I’m in love"];
+ const box=document.getElementById("chatbox");
+ box.innerHTML="";
+ flow.forEach((t,i)=>{
+  setTimeout(()=>{
+    let b=document.createElement("div");
+    b.className="bubble me";
+    b.innerText=t;
+    box.appendChild(b);
+  },i*900);
+ });
 }
 
 /* QUIZ */
-function checkLove(){
- if(loveAns.value.toLowerCase().includes("love")){
-  burst(); go("story");
- } else alert("Hint: starts with L");
-}
-
-function unlockFinal(){
- if(deep.value.toLowerCase().includes("love")){
-  go("final"); burst();
- }
+function checkDeep(){
+ const v=document.getElementById("deepInput").value.toLowerCase();
+ if(v.includes("love")){
+   go("final");
+   burst();
+ } else alert("Hint: love");
 }
 
 /* ENDING */
 function playEnding(){
  document.querySelectorAll(".fade-line").forEach((e,i)=>{
-  setTimeout(()=>e.classList.add("show"), i*900);
+  setTimeout(()=>e.classList.add("show"),i*900);
  });
 }
 </script>
