@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Our Love Movie 🎬</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -15,6 +14,26 @@ body{
  color:white;
  text-align:center;
  background:radial-gradient(circle at 30% 20%, #2a1639, #07060d 60%);
+ overflow-x:hidden;
+}
+
+/* star sky */
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+radial-gradient(1px 1px at 70% 60%, #fff, transparent),
+radial-gradient(2px 2px at 40% 80%, #fff, transparent),
+radial-gradient(1px 1px at 90% 20%, #fff, transparent);
+opacity:.35;
+animation:starsMove 90s linear infinite;
+pointer-events:none;
+}
+@keyframes starsMove{
+from{transform:translateY(0)}
+to{transform:translateY(-800px)}
 }
 
 .scene{
@@ -23,9 +42,10 @@ body{
  padding:28px 16px;
  max-width:900px;
  margin:auto;
+ opacity:0;
+ transition:opacity .6s ease;
 }
-
-.active{display:block;}
+.active{display:block;opacity:1;}
 
 button{
  padding:14px 22px;
@@ -64,27 +84,27 @@ input{
  text-align:left;
 }
 
-.chatbox{max-width:520px;margin:auto;text-align:left}
-.bubble{padding:12px 16px;border-radius:18px;margin:8px 0;max-width:80%}
-.me{background:#ff4da6;margin-left:auto}
-.her{background:#2b2b3c}
-.typing{opacity:.7;font-style:italic}
-
 img{width:100%;border-radius:12px;margin-top:12px}
 
-.fade{opacity:0;transform:translateY(20px);transition:1s}
-.fade.show{opacity:1;transform:none}
+/* floating hearts */
+#floatHearts{position:fixed;inset:0;pointer-events:none}
+.heart{position:absolute;font-size:18px;opacity:.6;animation:floatUp linear forwards}
+@keyframes floatUp{
+from{transform:translateY(100vh) scale(.6)}
+to{transform:translateY(-10vh) scale(1.4);opacity:0}
+}
 </style>
 </head>
 
 <body>
 
 <audio id="music"></audio>
+<div id="floatHearts"></div>
 
 <!-- LOCK -->
 <div id="lock" class="scene active">
 <h1>Private Love Movie 🎬</h1>
-<input id="pwInput" type="password" placeholder="Password">
+<input id="pwInput" type="password">
 <br>
 <button id="unlockBtn">Enter</button>
 </div>
@@ -93,39 +113,26 @@ img{width:100%;border-radius:12px;margin-top:12px}
 <div id="home" class="scene">
 <h1>Hi My Favorite Person 💗</h1>
 <div class="card">Every click reveals a piece of my heart.</div>
-
-<button onclick="playList('intro')">Play Music 🎵</button>
-<button onclick="show('letter')">Love Letter 💌</button>
-<button onclick="show('story')">Story Mode 📖</button>
-<button onclick="show('chat')">Unsent Chats 💬</button>
-<button onclick="show('quiz')">Love Quiz 💞</button>
-<button onclick="show('gallery')">Memories 📸</button>
+<button onclick="show('letter')">Love Letter</button>
+<button onclick="show('chat')">Unsent Chats</button>
+<button onclick="show('quiz')">Love Quiz</button>
+<button onclick="show('gallery')">Memories</button>
 </div>
 
 <!-- LETTER -->
 <div id="letter" class="scene">
-<h2>My Letter To You</h2>
-<button onclick="playList('letter')">Letter Music</button>
+<h2>My Letter</h2>
 <div id="letterBox" class="letter"></div>
-<button onclick="typeLetter()">Reveal Letter</button>
-<button onclick="emojiBurst()">Feel This</button>
+<button onclick="typeLetter()">Reveal</button>
+<button onclick="emojiBurst()">Feel</button>
 <button onclick="show('home')">Back</button>
-</div>
-
-<!-- STORY -->
-<div id="story" class="scene">
-<h2>Our Story 🌙</h2>
-<div class="card">Chapter 1 — write your beginning</div>
-<div class="card">Chapter 2 — when she became special</div>
-<div class="card">Chapter 3 — what she means to you</div>
-<button onclick="show('quiz')">Continue →</button>
 </div>
 
 <!-- CHAT -->
 <div id="chat" class="scene">
-<h2>Things I Never Sent 💬</h2>
-<div id="chatbox" class="chatbox"></div>
-<button onclick="startChat()">Play Chat</button>
+<h2>Things I Never Sent</h2>
+<div id="chatbox"></div>
+<button onclick="startChat()">Play</button>
 <button onclick="show('home')">Back</button>
 </div>
 
@@ -134,161 +141,114 @@ img{width:100%;border-radius:12px;margin-top:12px}
 <h2>Deepest Word?</h2>
 <input id="deepInput">
 <br>
-<button onclick="checkDeep()">Unlock Ending</button>
+<button onclick="checkDeep()">Unlock</button>
 </div>
 
 <!-- GALLERY -->
 <div id="gallery" class="scene">
-<h2>Our Memories 📸</h2>
-<button onclick="playList('memory')">Memory Music</button>
+<h2>Memories</h2>
 <img src="her.jpg">
 <img src="us.jpg">
-<img src="ss1.jpg">
-<img src="ss2.jpg">
 <button onclick="show('home')">Back</button>
 </div>
 
 <!-- FINAL -->
 <div id="final" class="scene">
-<h1>Final Scene 🎬</h1>
-<div class="card">
-<div class="fade">Out of everyone…</div>
-<div class="fade">I still choose you.</div>
-<div class="fade">Every day.</div>
-<div class="fade">Every version of life.</div>
-</div>
-<button onclick="playEnding()">Play Ending</button>
+<h1>I choose you. Always.</h1>
 <button onclick="emojiBurst()">Forever ❤️</button>
 </div>
 
 <script>
-/* ---------- PASSWORD ---------- */
+const PASS="lovemovie";
 
-const PASS = "lovemovie";
+/* unlock */
+document.getElementById("unlockBtn").onclick=()=>{
+ if(document.getElementById("pwInput").value.trim()===PASS)
+   show("home");
+ else alert("Wrong password 😳");
+};
 
-document.getElementById("unlockBtn").addEventListener("click", () => {
-  const v = document.getElementById("pwInput").value.trim();
-  if(v === PASS){
-    show("home");
-  } else {
-    alert("Wrong password 😳");
-  }
+/* cinematic navigation */
+function show(id){
+ const current=document.querySelector(".scene.active");
+ if(current){
+  current.style.opacity=0;
+  setTimeout(()=>{
+   current.classList.remove("active");
+   const next=document.getElementById(id);
+   next.classList.add("active");
+   setTimeout(()=>next.style.opacity=1,40);
+  },300);
+ }else document.getElementById(id).classList.add("active");
+}
+
+/* floating hearts */
+setInterval(()=>{
+ const h=document.createElement("div");
+ h.className="heart";
+ h.innerHTML=["💗","💞","💕","💖","❤️"][Math.floor(Math.random()*5)];
+ h.style.left=Math.random()*100+"vw";
+ h.style.animationDuration=4+Math.random()*5+"s";
+ document.getElementById("floatHearts").appendChild(h);
+ setTimeout(()=>h.remove(),9000);
+},700);
+
+/* sparkles */
+document.addEventListener("mousemove",e=>{
+ const s=document.createElement("div");
+ s.innerHTML="✨";
+ s.style.position="fixed";
+ s.style.left=e.clientX+"px";
+ s.style.top=e.clientY+"px";
+ s.style.pointerEvents="none";
+ s.style.transition="1s";
+ document.body.appendChild(s);
+ setTimeout(()=>{s.style.transform="translateY(-20px)";s.style.opacity=0},20);
+ setTimeout(()=>s.remove(),1000);
 });
 
-/* ---------- NAV ---------- */
-
-function show(id){
- document.querySelectorAll(".scene").forEach(s=>s.classList.remove("active"));
- document.getElementById(id).classList.add("active");
-}
-
-/* ---------- MUSIC ---------- */
-
-const tracks={
- intro:["intro1.mp3","intro2.mp3"],
- letter:["letter1.mp3"],
- memory:["memory1.mp3"]
-};
-
-let playlist=[],ti=0;
-
-function playList(name){
- playlist = tracks[name] || [];
- if(!playlist.length) return;
- ti=0;
- music.src = playlist[0];
- music.play();
-}
-
-music.onended = ()=>{
- if(!playlist.length) return;
- ti = (ti+1)%playlist.length;
- music.src = playlist[ti];
- music.play();
-};
-
-/* ---------- EMOJI BURST ---------- */
-
-const emojis=["😳","❤️","✨","💞","🥺"];
-
+/* emoji burst */
 function emojiBurst(){
  for(let i=0;i<28;i++){
   const e=document.createElement("div");
-  e.innerHTML=emojis[Math.floor(Math.random()*emojis.length)];
+  e.innerHTML=["😳","❤️","✨","💞"][Math.floor(Math.random()*4)];
   e.style.position="fixed";
   e.style.left=Math.random()*100+"vw";
   e.style.top="-20px";
   e.style.fontSize="28px";
   e.style.transition="2s linear";
   document.body.appendChild(e);
-  setTimeout(()=>{
-    e.style.transform="translateY(110vh) rotate(360deg)";
-    e.style.opacity=0;
-  },50);
+  setTimeout(()=>{e.style.transform="translateY(110vh) rotate(360deg)";e.style.opacity=0},50);
   setTimeout(()=>e.remove(),2000);
  }
 }
 
-/* ---------- LETTER ---------- */
-
-const letterText = `
-WRITE YOUR FULL DEEP LOVE LETTER HERE.
-MULTILINE WORKS.
-MAKE IT PERSONAL.
-`;
-
+/* letter typing */
+const text=`Write your real love message here`;
 function typeLetter(){
- const box=document.getElementById("letterBox");
+ let i=0,box=document.getElementById("letterBox");
  box.innerHTML="";
- let i=0;
- function step(){
-  if(i<letterText.length){
-    box.innerHTML += letterText[i++];
-    setTimeout(step,28);
-  }
- }
- step();
+ (function t(){if(i<text.length){box.innerHTML+=text[i++];setTimeout(t,25)}})();
 }
 
-/* ---------- CHAT ---------- */
-
+/* chat */
 function startChat(){
- const msgs=[
-  "okay act normal…",
-  "don’t fall too fast…",
-  "why is she this adorable",
-  "yeah… I’m in love."
- ];
+ const msgs=["act normal","she's adorable","yeah I'm in love"];
  const box=document.getElementById("chatbox");
  box.innerHTML="";
- msgs.forEach((t,i)=>{
-  setTimeout(()=>{
-    const b=document.createElement("div");
-    b.className="bubble me";
-    b.innerText=t;
-    box.appendChild(b);
-  }, i*900);
- });
+ msgs.forEach((m,i)=>setTimeout(()=>{
+  const b=document.createElement("div");
+  b.className="card";
+  b.innerText=m;
+  box.appendChild(b);
+ },i*900));
 }
 
-/* ---------- QUIZ ---------- */
-
+/* quiz */
 function checkDeep(){
- const v=document.getElementById("deepInput").value.toLowerCase();
- if(v.includes("love")){
-   show("final");
-   emojiBurst();
- } else {
-   alert("Hint: it starts with L");
- }
-}
-
-/* ---------- ENDING ---------- */
-
-function playEnding(){
- document.querySelectorAll(".fade").forEach((e,i)=>{
-  setTimeout(()=>e.classList.add("show"), i*900);
- });
+ if(document.getElementById("deepInput").value.toLowerCase().includes("love")){
+   show("final"); emojiBurst();
+ }else alert("hint: starts with L");
 }
 </script>
 
